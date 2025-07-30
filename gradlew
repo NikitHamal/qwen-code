@@ -109,6 +109,14 @@ case "$( uname )" in                #(
   NONSTOP* )        nonstop=true ;;
 esac
 
+# Download Gradle if not present
+if [ ! -d "$APP_HOME/gradle-8.4" ]; then
+    echo "Downloading Gradle 8.4..."
+    wget -O gradle-8.4-bin.zip https://services.gradle.org/distributions/gradle-8.4-bin.zip
+    unzip -q gradle-8.4-bin.zip
+    rm gradle-8.4-bin.zip
+fi
+
 CLASSPATH=$APP_HOME/gradle-8.4/lib/gradle-launcher-8.4.jar
 
 

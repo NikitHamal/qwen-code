@@ -50,10 +50,11 @@ echo "✅ App name updated to AgentC"
 
 echo ""
 echo "4. Checking Gradle wrapper..."
-if [ -f "gradle-8.4/bin/gradle" ]; then
-    echo "✅ Gradle wrapper downloaded"
+if [ -f "gradlew" ]; then
+    echo "✅ Gradle wrapper script available"
+    echo "   - Will download Gradle 8.4 on first run"
 else
-    echo "❌ Gradle wrapper missing"
+    echo "❌ Gradle wrapper script missing"
 fi
 
 echo ""
