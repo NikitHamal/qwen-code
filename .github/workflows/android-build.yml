@@ -29,8 +29,8 @@ jobs:
     - name: Create keystore
       run: |
         keytool -genkey -v -keystore app/release.keystore -alias upload -keyalg RSA -keysize 2048 -validity 10000 \
-          -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
-          -keypass ${{ secrets.KEY_PASSWORD }} \
+          -storepass agentc123 \
+          -keypass agentc123 \
           -dname "CN=AgentC, OU=CodeX, O=CodeX Agent, L=Unknown, S=Unknown, C=US"
 
     - name: Get commit hash
@@ -47,8 +47,8 @@ jobs:
       run: |
         jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
           -keystore app/release.keystore \
-          -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
-          -keypass ${{ secrets.KEY_PASSWORD }} \
+          -storepass agentc123 \
+          -keypass agentc123 \
           app/build/outputs/apk/release/app-release-unsigned.apk upload
 
     - name: Optimize APK

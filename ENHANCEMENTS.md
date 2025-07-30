@@ -168,10 +168,10 @@ cd agentc
 ```
 
 ### CI/CD Setup
-1. **GitHub Secrets Required**:
-   - `KEYSTORE_PASSWORD`: Keystore password
-   - `KEY_PASSWORD`: Key password
-   - `GITHUB_TOKEN`: GitHub token for releases
+The project uses default passwords for the keystore:
+- **Keystore Password**: `agentc123`
+- **Key Password**: `agentc123`
+- **No additional secrets required!**
 
 2. **Automatic Triggers**:
    - Push to any branch → Build and test
