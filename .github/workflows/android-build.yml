@@ -1,0 +1,104 @@
+name: Android Build & Release
+
+on:
+  push:
+    branches: [ main, develop, feature/*, hotfix/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for git describe
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+
+    - name: Create keystore
+      run: |
+        keytool -genkey -v -keystore app/release.keystore -alias upload -keyalg RSA -keysize 2048 -validity 10000 \
+          -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+          -keypass ${{ secrets.KEY_PASSWORD }} \
+          -dname "CN=AgentC, OU=CodeX, O=CodeX Agent, L=Unknown, S=Unknown, C=US"
+
+    - name: Get commit hash
+      id: commit
+      run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    - name: Build debug APK
+      run: ./gradlew assembleDebug
+
+    - name: Build release APK
+      run: ./gradlew assembleRelease
+
+    - name: Sign APK
+      run: |
+        jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+          -keystore app/release.keystore \
+          -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
+          -keypass ${{ secrets.KEY_PASSWORD }} \
+          app/build/outputs/apk/release/app-release-unsigned.apk upload
+
+    - name: Optimize APK
+      run: |
+        $ANDROID_HOME/build-tools/34.0.0/zipalign -v 4 \
+          app/build/outputs/apk/release/app-release-unsigned.apk \
+          app/build/outputs/apk/release/app-release-aligned.apk
+
+    - name: Rename APK with commit hash
+      run: |
+        mv app/build/outputs/apk/release/app-release-aligned.apk \
+          app/build/outputs/apk/release/AgentC-${{ steps.commit.outputs.hash }}.apk
+
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AgentC-${{ steps.commit.outputs.hash }}
+        path: app/build/outputs/apk/release/AgentC-${{ steps.commit.outputs.hash }}.apk
+
+    - name: Create Release
+      if: github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: app/build/outputs/apk/release/AgentC-${{ steps.commit.outputs.hash }}.apk
+        tag_name: v1.0.0-${{ steps.commit.outputs.hash }}
+        name: AgentC Release ${{ steps.commit.outputs.hash }}
+        body: |
+          ## AgentC Android App
+          
+          **Commit:** ${{ steps.commit.outputs.hash }}
+          **Branch:** ${{ github.ref_name }}
+          **Build Date:** ${{ github.event.head_commit.timestamp }}
+          
+          ### Features:
+          - AI-powered code assistance
+          - File upload and management
+          - Code editor with syntax highlighting
+          - Settings and customization options
+          
+          ### Installation:
+          1. Download the APK file
+          2. Enable "Install from unknown sources" in your Android settings
+          3. Install the APK
+          
+          ### Changes:
+          - Enhanced UI/UX
+          - Improved error handling
+          - Added settings and about screens
+          - Better file management
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

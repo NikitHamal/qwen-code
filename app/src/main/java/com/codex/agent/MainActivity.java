@@ -1,4 +1,4 @@
-package com.example.qwencode;
+package com.codex.agent;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private Button sendButton;
     private ImageButton attachButton;
     private ImageButton browseButton;
+    private ProgressBar progressBar;
     private ChatAdapter chatAdapter;
     private List<ChatMessage> chatMessages;
     private QwenApiClient qwenApiClient;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         sendButton = findViewById(R.id.sendButton);
         attachButton = findViewById(R.id.attachButton);
         browseButton = findViewById(R.id.browseButton);
+        progressBar = findViewById(R.id.progressBar);
 
         chatMessages = new ArrayList<>();
         chatAdapter = new ChatAdapter(chatMessages);
@@ -84,6 +86,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendMessage(String messageText) {
         updateEmptyViewVisibility();
+        
+        // Show progress
+        progressBar.setVisibility(View.VISIBLE);
+        sendButton.setEnabled(false);
+        
         // Add user message to UI
         ChatMessage userMessage = new ChatMessage(messageText, ChatMessage.Type.USER);
         chatMessages.add(userMessage);
@@ -124,24 +131,42 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             botMessage.appendMessage(content);
                             chatAdapter.notifyItemChanged(botMessagePosition);
+                            recyclerView.scrollToPosition(botMessagePosition);
                         });
                     }
 
                     @Override
                     public void onError(Exception e) {
                         e.printStackTrace();
-                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                        runOnUiThread(() -> {
+                            progressBar.setVisibility(View.GONE);
+                            sendButton.setEnabled(true);
+                            Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            // Remove the bot message on error
+                            chatMessages.remove(botMessage);
+                            chatAdapter.notifyDataSetChanged();
+                        });
                     }
 
                     @Override
                     public void onComplete() {
-                        // Handle completion
+                        runOnUiThread(() -> {
+                            progressBar.setVisibility(View.GONE);
+                            sendButton.setEnabled(true);
+                        });
                     }
                 });
 
             } catch (IOException e) {
                 e.printStackTrace();
-                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    sendButton.setEnabled(true);
+                    Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    // Remove the bot message on error
+                    chatMessages.remove(botMessage);
+                    chatAdapter.notifyDataSetChanged();
+                });
             }
         });
     }
@@ -242,6 +267,14 @@ public class MainActivity extends AppCompatActivity {
             chatId = null;
             currentParentId = null;
             Toast.makeText(this, "Chat cleared", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (item.getItemId() == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (item.getItemId() == R.id.action_about) {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);

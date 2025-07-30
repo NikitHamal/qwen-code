@@ -46,3 +46,12 @@ logs/
 
 # Qwen Code Configs
 .qwen/
+
+# Android
+local.properties
+*.apk
+*.aab
+app/release.keystore
+.gradle/
+build/
+app/build/

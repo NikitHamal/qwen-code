@@ -1,168 +1,183 @@
-# Qwen Code
+# AgentC - AI-Powered Code Assistant
 
-![Qwen Code Screenshot](./docs/assets/qwen-screenshot.png)
+AgentC is an advanced Android application that provides a graphical user interface for AI-powered code assistance. Built with modern Android development practices and Material Design 3, it offers a seamless experience for developers to interact with AI models for coding tasks.
 
-Qwen Code is a command-line AI workflow tool adapted from [**Gemini CLI**](https://github.com/google-gemini/gemini-cli) (Please refer to [this document](./README.gemini.md) for more details), optimized for [Qwen3-Coder](https://github.com/QwenLM/Qwen3-Coder) models with enhanced parser support & tool support.
+## Features
 
-> [!WARNING]
-> Qwen Code may issue multiple API calls per cycle, resulting in higher token usage, similar to Claude Code. We’re actively working to enhance API efficiency and improve the overall developer experience. ModelScope offers 2,000 free API calls if you are in China mainland. Please check [API config section](#api-configuration) for more details.
+### 🤖 AI-Powered Code Assistance
+- Real-time chat interface with AI models
+- Streaming responses for immediate feedback
+- Support for multiple AI models (Qwen, etc.)
+- Context-aware conversations
 
-## Key Features
+### 📁 File Management
+- File upload and attachment capabilities
+- Built-in file browser for device storage
+- Support for various file types
+- Secure file handling with STS tokens
 
-- **Code Understanding & Editing** - Query and edit large codebases beyond traditional context window limits
-- **Workflow Automation** - Automate operational tasks like handling pull requests and complex rebases
-- **Enhanced Parser** - Adapted parser specifically optimized for Qwen-Coder models
+### 💻 Code Editor
+- Syntax highlighting for multiple languages
+- Code viewing and editing capabilities
+- File content display
+- Support for various programming languages
 
-## Quick Start
+### ⚙️ Settings & Customization
+- Dark mode support
+- Auto-scroll preferences
+- Sound notification settings
+- User preferences management
+
+### 🎨 Modern UI/UX
+- Material Design 3 components
+- Responsive layout design
+- Intuitive navigation
+- Progress indicators and error handling
+
+## Screenshots
+
+[Add screenshots here]
+
+## Installation
 
 ### Prerequisites
+- Android Studio Arctic Fox or later
+- Android SDK 34
+- Java 17 or later
+- Gradle 8.4
 
-Ensure you have [Node.js version 20](https://nodejs.org/en/download) or higher installed.
+### Building from Source
 
+1. Clone the repository:
 ```bash
-curl -qL https://www.npmjs.com/install.sh | sh
+git clone https://github.com/codex-agent/agentc.git
+cd agentc
 ```
 
-### Installation
-
+2. Open the project in Android Studio or build from command line:
 ```bash
-npm install -g @qwen-code/qwen-code
-qwen --version
+./gradlew assembleDebug
 ```
 
-Then run from anywhere:
-
+3. Install on device:
 ```bash
-qwen
+./gradlew installDebug
 ```
 
-Or you can install it from source:
+### Download Pre-built APK
 
-```bash
-git clone https://github.com/QwenLM/qwen-code.git
-cd qwen-code
-npm install
-npm install -g .
+Download the latest release from the [Releases page](https://github.com/codex-agent/agentc/releases).
+
+## Development
+
+### Project Structure
+```
+app/
+├── src/main/
+│   ├── java/com/codex/agent/
+│   │   ├── MainActivity.java          # Main chat interface
+│   │   ├── QwenApiClient.java        # API client implementation
+│   │   ├── ChatAdapter.java          # RecyclerView adapter
+│   │   ├── ChatMessage.java          # Message data model
+│   │   ├── FileListActivity.java     # File browser
+│   │   ├── CodeEditorActivity.java   # Code editor
+│   │   ├── SettingsActivity.java     # Settings screen
+│   │   └── AboutActivity.java        # About screen
+│   ├── res/
+│   │   ├── layout/                   # UI layouts
+│   │   ├── values/                   # Strings, colors, styles
+│   │   ├── drawable/                 # Vector drawables
+│   │   └── menu/                     # Menu resources
+│   └── AndroidManifest.xml
+└── build.gradle                      # App-level build config
 ```
 
-### API Configuration
+### Key Components
 
-Set your Qwen API key (In Qwen Code project, you can also set your API key in `.env` file). the `.env` file should be placed in the root directory of your current project.
+#### MainActivity
+The main chat interface that handles:
+- User input and message sending
+- File attachments
+- Real-time AI responses
+- Progress indicators
+- Error handling
 
-> ⚠️ **Notice:** <br>
-> **If you are in mainland China, please go to https://bailian.console.aliyun.com/ or https://modelscope.cn/docs/model-service/API-Inference/intro to apply for your API key** <br>
-> **If you are not in mainland China, please go to https://modelstudio.console.alibabacloud.com/ to apply for your API key**
+#### QwenApiClient
+API client that manages:
+- HTTP requests to AI services
+- File upload with STS tokens
+- Streaming responses
+- Authentication and headers
 
-If you are in mainland China, you can use Qwen3-Coder through the Alibaba Cloud bailian platform.
+#### ChatAdapter
+RecyclerView adapter for displaying:
+- User and bot messages
+- Different message types
+- Dynamic content updates
 
-```bash
-export OPENAI_API_KEY="your_api_key_here"
-export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-export OPENAI_MODEL="qwen3-coder-plus"
+### Dependencies
+
+```gradle
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'io.github.kbiakov:codeview-android:1.4.2'
+}
 ```
 
-If you are in mainland China, ModelScope offers 2,000 free model inference API calls per day:
+## CI/CD
 
-```bash
-export OPENAI_API_KEY="your_api_key_here"
-export OPENAI_BASE_URL="https://api-inference.modelscope.cn/v1"
-export OPENAI_MODEL="Qwen/Qwen3-Coder-480B-A35B-Instruct"
-```
+The project includes GitHub Actions for automated builds:
 
-If you are not in mainland China, you can use Qwen3-Coder through the Alibaba Cloud modelstuido platform.
+- **Trigger**: Push to any branch or pull request
+- **Build**: Debug and Release APKs
+- **Signing**: Automatic APK signing with generated keystore
+- **Naming**: APKs renamed with commit hash
+- **Release**: Automatic releases on main branch
 
-```bash
-export OPENAI_API_KEY="your_api_key_here"
-export OPENAI_BASE_URL="https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
-export OPENAI_MODEL="qwen3-coder-plus"
-```
+### Workflow Features
+- ✅ Multi-branch support
+- ✅ Automatic keystore generation
+- ✅ APK signing and optimization
+- ✅ Commit hash naming
+- ✅ Artifact upload
+- ✅ GitHub releases
 
-## Usage Examples
+## Contributing
 
-### Explore Codebases
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-```sh
-cd your-project/
-qwen
-> Describe the main pieces of this system's architecture
-```
-
-### Code Development
-
-```sh
-> Refactor this function to improve readability and performance
-```
-
-### Automate Workflows
-
-```sh
-> Analyze git commits from the last 7 days, grouped by feature and team member
-```
-
-```sh
-> Convert all images in this directory to PNG format
-```
-
-## Popular Tasks
-
-### Understand New Codebases
-
-```text
-> What are the core business logic components?
-> What security mechanisms are in place?
-> How does the data flow work?
-```
-
-### Code Refactoring & Optimization
-
-```text
-> What parts of this module can be optimized?
-> Help me refactor this class to follow better design patterns
-> Add proper error handling and logging
-```
-
-### Documentation & Testing
-
-```text
-> Generate comprehensive JSDoc comments for this function
-> Write unit tests for this component
-> Create API documentation
-```
-
-## Benchmark Results
-
-### Terminal-Bench
-
-| Agent     | Model              | Accuracy |
-| --------- | ------------------ | -------- |
-| Qwen Code | Qwen3-Coder-480A35 | 37.5     |
-
-## Project Structure
-
-```
-qwen-code/
-├── packages/           # Core packages
-├── docs/              # Documentation
-├── examples/          # Example code
-└── tests/            # Test files
-```
-
-## Development & Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) to learn how to contribute to the project.
-
-## Troubleshooting
-
-If you encounter issues, check the [troubleshooting guide](docs/troubleshooting.md).
-
-## Acknowledgments
-
-This project is based on [Google Gemini CLI](https://github.com/google-gemini/gemini-cli). We acknowledge and appreciate the excellent work of the Gemini CLI team. Our main contribution focuses on parser-level adaptations to better support Qwen-Coder models.
+### Development Guidelines
+- Follow Android coding conventions
+- Use Material Design 3 components
+- Add proper error handling
+- Include unit tests for new features
+- Update documentation as needed
 
 ## License
 
-[LICENSE](./LICENSE)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Star History
+## Acknowledgments
 
-[![Star History Chart](https://api.star-history.com/svg?repos=QwenLM/qwen-code&type=Date)](https://www.star-history.com/#QwenLM/qwen-code&Date)
+- Built with [Material Design 3](https://m3.material.io/)
+- Uses [OkHttp](https://square.github.io/okhttp/) for networking
+- Code highlighting powered by [CodeView](https://github.com/kbiakov/CodeView-Android)
+- Icons from [Material Icons](https://fonts.google.com/icons)
+
+## Support
+
+- 📧 Email: support@codex-agent.com
+- 🐛 Issues: [GitHub Issues](https://github.com/codex-agent/agentc/issues)
+- 📖 Documentation: [Wiki](https://github.com/codex-agent/agentc/wiki)
+
+---
+
+**AgentC** - Empowering developers with AI-powered code assistance on Android.

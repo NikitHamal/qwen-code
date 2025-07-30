@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    namespace 'com.example.qwencode'
-    compileSdk 33
+    namespace 'com.codex.agent'
+    compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.qwencode"
+        applicationId "com.codex.agent"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 

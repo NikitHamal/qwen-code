@@ -1,4 +1,4 @@
-package com.example.qwencode;
+package com.codex.agent;
 
 public class ChatMessage {
     public enum Type {
