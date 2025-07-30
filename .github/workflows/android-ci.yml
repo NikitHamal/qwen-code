@@ -31,7 +31,7 @@ jobs:
         mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/AgentC-release-${commit_hash}.apk
 
     - name: Upload APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: AgentC-release
         path: app/build/outputs/apk/release/AgentC-release-*.apk
